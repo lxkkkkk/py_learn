@@ -1,4 +1,5 @@
 from student import Student
+import time
 
 class StudentCMS(object):
     def __init__(self):
@@ -20,29 +21,88 @@ class StudentCMS(object):
         print() #空行隔开
 
     def add(self):
-        pass
+        name=input('请输入学生姓名：')
+        age=int(input('请输入学生年龄：'))
+        gender=input('请输入学生性别：')
+        phone=input('请输入学生电话：')
+        desc=input('请输入学生描述信息：')
+
+        self.stu_list.append(Student(name,age,gender,phone,desc))
+
+        print(f'添加{name}学生信息成功！')
 
     def delete(self):
-        pass
+        del_name=input('请输入要删除的学生姓名：')
+        flag=False
+        for stu in self.stu_list:
+            if stu.name==del_name:
+                self.stu_list.remove(stu)
+                print(f'学员{del_name}信息删除成功')
+                flag=True
+                break
+        if not flag:
+            print('查无此人，请检查后重新删除')
+
 
     def update(self):
-        pass
+        upd_name = input('请输入要修改的学生姓名：')
+        flag = False
+        for stu in self.stu_list:
+            if stu.name == upd_name:
+                stu.gender=input('请输入新的性别：')
+                stu.age=input('请输入新的年龄：')
+                stu.phone=input('请输入新的电话号码：')
+                stu.desc=input('请输入新的描述：')
+
+                print(f'学员{upd_name}信息修改成功')
+                flag = True
+                break
+        if not flag:
+            print('查无此人，请检查后重新修改')
 
     def query(self):
-        pass
+        query_name = input('请输入要查找的学生姓名：')
+        flag = False
+        for stu in self.stu_list:
+            if stu.name == query_name:
+                print(stu)
+                flag = True
+                break
+        if not flag:
+            print('查无此人，请检查后重新查找')
 
     def query_all(self):
-        pass
+        if len(self.stu_list)==0:
+            print('暂无学生信息，空的')
+        else:
+            for stu in self.stu_list:
+                print(stu)
+            print('学生信息打印完毕')
 
     def save(self):
-        pass
+        try:
+            with open('./stu_data.txt', 'w') as dest_f:
+                stu_dict = [stu.__dict__ for stu in self.stu_list]
+                dest_f.write(str(stu_dict))
+                print('保存学生信息成功')
+        except:
+            with open('./stu_data.txt', 'w') as dest_f:
+                pass
 
     def load(self):
-        pass
+        with open('./stu_data.txt','r') as source_f:
+            stu_data=source_f.read()
+            stu_list=eval(stu_data)
+            if len(stu_list)==0:
+                stu_list=[]
+            self.stu_list=[Student(**stu_dict) for stu_dict in stu_list]
 
     def start(self):
+        self.load()
         while True:
+            time.sleep(1)
             self.show_view()
+            print('='*80)
             input_num=input('请输入您要操作的编号：')
             if input_num=='1':
                 print('添加学生信息\n')
@@ -63,7 +123,7 @@ class StudentCMS(object):
                 print('保存学生信息\n')
                 self.save()
             elif input_num=='0':
-                res=input('您确定要退出吗？（y/n）')
+                res=input('您确定要退出吗？(请先确认已经保存信息)（y/n）')
                 if res.lower()=='y':
                     print('退出系统，谢谢您的使用\n')
                     break
